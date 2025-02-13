@@ -31,7 +31,6 @@ try:
         database="Inventario" # Nombre de la base de datos
     )
 
-    cursor = DB_CONECT.cursor()
     print("✅ Conexión exitosa")
 
     stateArea = {
@@ -40,7 +39,14 @@ try:
         'Nexus_Sales': 3,
         'Avis': 4,
         'Honest': 5,
-        'W2FLY': 6
+        'W2FLY': 6,
+    }
+
+    stateCategory = {
+        'CPU': 1,
+        'UPS': 2,
+        'Laptop': 3,
+        'Monitor': 4,
     }
 
 except mysql.connector.Error as e:

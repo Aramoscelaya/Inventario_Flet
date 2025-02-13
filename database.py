@@ -1,9 +1,10 @@
 import threading
 #import psycopg2
-from config import DB_CONECT, stateArea
+from config import DB_CONECT, stateArea, stateCategory
 import datetime
 import json
 
+cursor = DB_CONECT.cursor()
 
 
 def close_connection():
@@ -29,25 +30,28 @@ def create_product(data):
         if items['name'] == 'id_area':
             value = stateArea[items['value']]
             dataValue.append(value)
+        elif items['name'] == 'id_categoria':
+            value = stateCategory[items['value']]
+            dataValue.append(value)
         else:
             dataValue.append(items['value'])
 
-    sql = 'INSERT INTO productos ('+', '.join(dataName)+') VALUES (%s, %s, %s, %s, %s, %s, %s)'
+    sql = 'INSERT INTO productos (nombre_producto, '+', '.join(dataName)+') VALUES ("", %s, %s, %s, %s, %s, %s, %s)'
     valores = (dataValue)
 
     print(sql)
     print(valores)
     '''
-    INSERT INTO productos (id_producto, modelo, marca, hostname, id_area, id_categoria, usuario_modificacion) VALUES (%s, %s, %s, %s, %s, %s, %s)
-    ['PF4HD0K', 'E14', 'Lenovo', 'WPHI002-LP', 'Honest', 'Laptop', 'admin']
+    INSERT INTO productos (id_producto, nombre_producto, modelo, marca, hostname, id_area, id_categoria, usuario_modificacion) VALUES (%s, %s, %s, %s, %s, %s, %s)
+    ['PF4HD0K', 'E14', 'Lenovo', 'WPHI002-LP', 5, 3, 'admin']
     '''
 
-    #cursor.execute(sql, valores)
-    #conexion.commit()  # Guarda los cambios en la base de datos
+    cursor.execute(sql, valores)
+    DB_CONECT.commit()  # Guarda los cambios en la base de datos
 
-    #print("Registro insertado, ID:", cursor.lastrowid)
-    #cursor.close()
-    #conexion.close()
+    print("Registro insertado, ID:", cursor.lastrowid)
+    cursor.close()
+    close_connection()
 
 
     
