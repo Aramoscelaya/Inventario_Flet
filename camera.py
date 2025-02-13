@@ -5,6 +5,7 @@ import cv2
 import time
 import pygame
 from scanner import scan_code
+from database import create_product
 
 scanning = False
 result_text = None
@@ -66,7 +67,7 @@ def scan_loop():
             if frames_checked >= 10:
                 for c, count in code_count.items():
                     if count >= 10:
-                        result_text.value = f"Resultado: {c}"
+                        #result_text.value = f"Resultado: {c}"
                         getCode(c)
                         sound.play()
                         time.sleep(0.5)
@@ -85,10 +86,23 @@ def getCode(code):
 
     #datos = ['id_producto-PF4HD0K', 'hostname-WPHI002']
     for i in datos:
-        item = {}
-        item["name"] = i.split('-')[0]
-        item["value"] = i.split('-')[1]
+        try:
+            item = {}
 
-        items.append(item)
+            name = i.split('-')[0]
+            item["name"] = name
+
+            if name == 'hostname':
+                item["value"] = i.split('-')[1].replace("/", "-")
+            else:
+                item["value"] = i.split('-')[1]
+
+            items.append(item)
+        except IndexError:
+            items = "Codigo ilegible"
+            print("Error: Intentaste acceder a una posición que no existe en la lista")
     
+    result_text.value = f"Resultado: {items}"
     print(items)
+
+    create_product(items)

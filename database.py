@@ -1,7 +1,9 @@
 import threading
-import psycopg2
-from config import DB_CONECT
+#import psycopg2
+from config import DB_CONECT, stateArea
 import datetime
+import json
+
 
 
 def close_connection():
@@ -16,9 +18,39 @@ def guardar_codigo(codigo):
     pass#thread = threading.Thread(target=insertar_codigo, args=(codigo))
     #thread.start()
 
-def get_code(code):
-    pass
+def create_product(data):
+    #[{'name': 'id_producto', 'value': 'PF4HD0K'}, {'name': 'modelo', 'value': 'E14'}, {'name': 'marca', 'value': 'Lenovo'}, {'name': 'hostname', 'value': 'WPHI002-LP'}, {'name': 'id_area', 'value': 'Honest'}, {'name': 'id_categoria', 'value': 'Laptop'}, {'name': 'usuario_modificacion', 'value': 'admin'}]
+    dataName = []
+    dataValue = []
 
+    for items in data:
+        
+        dataName.append(items['name'])
+        if items['name'] == 'id_area':
+            value = stateArea[items['value']]
+            dataValue.append(value)
+        else:
+            dataValue.append(items['value'])
+
+    sql = 'INSERT INTO productos ('+', '.join(dataName)+') VALUES (%s, %s, %s, %s, %s, %s, %s)'
+    valores = (dataValue)
+
+    print(sql)
+    print(valores)
+    '''
+    INSERT INTO productos (id_producto, modelo, marca, hostname, id_area, id_categoria, usuario_modificacion) VALUES (%s, %s, %s, %s, %s, %s, %s)
+    ['PF4HD0K', 'E14', 'Lenovo', 'WPHI002-LP', 'Honest', 'Laptop', 'admin']
+    '''
+
+    #cursor.execute(sql, valores)
+    #conexion.commit()  # Guarda los cambios en la base de datos
+
+    #print("Registro insertado, ID:", cursor.lastrowid)
+    #cursor.close()
+    #conexion.close()
+
+
+    
 '''
 def insertar_codigo(codigo):
     cursor = DB_CONECT.cursor()

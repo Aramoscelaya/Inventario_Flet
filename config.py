@@ -27,11 +27,22 @@ try:
     DB_CONECT = mysql.connector.connect(
         host="localhost",      # Cambia si usas un servidor remoto
         user="root",     # Usuario de MySQL
-        password="12345678", # Contraseña de MySQL
+        password="0666", # Contraseña de MySQL
         database="Inventario" # Nombre de la base de datos
     )
 
+    cursor = DB_CONECT.cursor()
     print("✅ Conexión exitosa")
+
+    stateArea = {
+        'Sistemas': 1,
+        'Nexus_Service': 2,
+        'Nexus_Sales': 3,
+        'Avis': 4,
+        'Honest': 5,
+        'W2FLY': 6
+    }
+
 except mysql.connector.Error as e:
     print(f"❌ Error conectando a MySQL: {e}")
 finally:

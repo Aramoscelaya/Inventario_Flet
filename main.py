@@ -19,6 +19,8 @@ page = None
 def main(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.title = "App con Navegación Lateral"
+    page.window.width = 800
+    page.window.height = 650
     
     def cambiar_pagina(seccion):
         page.controls.clear()  # 🔹 Limpia la página antes de cambiar de sección
@@ -83,13 +85,13 @@ def camara_main(p: ft.Page):
     page = p 
     page.title = "Escáner de Códigos"
     page.window.width = 800
-    page.window.height = 600
+    page.window.height = 700
 
     result_text = ft.Text(value="Resultado: ", size=20)
     #scan_button = ft.ElevatedButton(text="Scan", on_click=start_scan)
     start_scan(e="")
 
-    camera_image = ft.Image(src="0.png", width=640, height=480)
+    camera_image = ft.Image(src="0.png", width=640, height=450)
     page.image = camera_image
 
     page.add(
@@ -109,14 +111,14 @@ def add_items(p: ft.Page):
     global page, result_text 
     page = p 
     page.title = "Escáner de Códigos"
-    page.window.width = 800
-    page.window.height = 600
+    #page.window.width = 800
+    #page.window.height = 700
 
     result_text = ft.Text(value="Resultado: ", size=20)
     #scan_button = ft.ElevatedButton(text="Scan", on_click=start_scan)
     start_scan(page, result_text, e="")
 
-    camera_image = ft.Image(src="0.png", width=640, height=480)
+    camera_image = ft.Image(src="0.png", width=640, height=450)
     page.image = camera_image
 
     page.add(
