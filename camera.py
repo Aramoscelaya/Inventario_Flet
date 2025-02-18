@@ -112,5 +112,8 @@ def getCode(code):
         case 'add_items':
             response = create_product(items)
             return response
+        case 'assignment':
+            response = create_product(items)
+            return response
         case _:
             return "Otro número"

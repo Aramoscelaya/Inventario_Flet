@@ -53,7 +53,7 @@ def main(page: ft.Page):
             case 'add_items':
                 add_items(page)
             case 'assignment':
-                conf(page)
+                assignment(page)
             case _:
                 home(page)
     
@@ -143,10 +143,48 @@ def add_items(p: ft.Page):
         ], alignment=ft.MainAxisAlignment.CENTER)
     )
 
-def conf(page):
-    code = '4026700424256'
-    print(code)
-    #get_code(code) 
+def assignment(p: ft.Page):
+    '''global page, result_text 
+    page = p 
+    page.title = "Escáner de Códigos"
+
+    result_text = ft.Text(value="Resultado: ", size=20)
+    start_scan(page, result_text, 'assignment', e="")
+
+    camera_image = ft.Image(src="0.png", width=640, height=450)
+    page.image = camera_image
+
+    page.add(
+        ft.Column([
+            camera_image,
+            #scan_button,
+            result_text,
+        ], alignment=ft.MainAxisAlignment.CENTER)
+    )'''
+    global page 
+    page = p 
+    page.title = "Dropdown en Flet"
+
+    opciones = [{'rj', "Rojo"}, {'vr', "Verde"}, {'az', "Azul"}]
+
+    dropdown = ft.Dropdown(
+        label="Selecciona una opción",
+        options=[ft.dropdown.Option(op) for op in opciones],
+        #options=[
+        #    ft.dropdown.Option("MX", text="México"),
+        #    ft.dropdown.Option("US", text="Estados Unidos"),
+        #    ft.dropdown.Option("ES", text="España")
+        #],
+        on_change=lambda e: actualizar_texto(e)
+    )
+
+    resultado = ft.Text("Seleccionaste: Ninguna")
+
+    def actualizar_texto(e):
+        resultado.value = f"Seleccionaste: {dropdown.value}"
+        page.update()
+
+    page.add(dropdown, resultado)
 
 #ft.app(target=main, view=ft.WEB_BROWSER)
 #ft.app(target=main, view=ft.FLET_APP)
