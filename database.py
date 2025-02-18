@@ -1,31 +1,59 @@
 import threading
 #import psycopg2
-from config import DB_CONECT, stateArea, stateCategory
+from config import data_connection, stateArea, stateCategory
+import mysql.connector
 import datetime
 import json
 
-cursor = DB_CONECT.cursor()
+cursor = None
+DB_CONECT = None
 
+def create_connection():
+    try:
+        global DB_CONECT
+        
+        DB_CONECT = mysql.connector.connect(
+            host = data_connection['host'],
+            user = data_connection['user'],
+            password = data_connection['password'],
+            database = data_connection['database']
+        )
+        print("✅ Conexión exitosa")
+        return True
+
+    except mysql.connector.Error as e:
+        print(f"❌ Error conectando a MySQL: {e}")
+        return False
+    finally:
+        if 'conexion' in locals() and DB_CONECT.is_connected():
+            DB_CONECT.close()
+
+def create_cursor():
+    global cursor
+    cursor = DB_CONECT.cursor()
+
+    if not cursor:
+        raise Exception("No se puso crear el cursor Msql.")
+    return cursor
 
 def close_connection():
     if DB_CONECT.is_connected():
-        print("✅ Conexión exitosa a MySQL")
-
-    # Cierra la conexión al finalizar
-    DB_CONECT.close()
-    print("✅ Conexión cerrada a MySQL")
+        # Cierra la conexión al finalizar
+        DB_CONECT.close()
+        print("✅ Conexión cerrada a MySQL")
 
 def guardar_codigo(codigo):
     pass#thread = threading.Thread(target=insertar_codigo, args=(codigo))
     #thread.start()
 
 def create_product(data):
-    #[{'name': 'id_producto', 'value': 'PF4HD0K'}, {'name': 'modelo', 'value': 'E14'}, {'name': 'marca', 'value': 'Lenovo'}, {'name': 'hostname', 'value': 'WPHI002-LP'}, {'name': 'id_area', 'value': 'Honest'}, {'name': 'id_categoria', 'value': 'Laptop'}, {'name': 'usuario_modificacion', 'value': 'admin'}]
+    create_connection()
+    create_cursor()
+    #[{'name': 'num_serie', 'value': 'PF4HD0K'}, {'name': 'modelo', 'value': 'E14'}, {'name': 'marca', 'value': 'Lenovo'}, {'name': 'hostname', 'value': 'WPHI002-LP'}, {'name': 'id_area', 'value': 'Honest'}, {'name': 'id_categoria', 'value': 'Laptop'}, {'name': 'usuario_modificacion', 'value': 'admin'}]
     dataName = []
     dataValue = []
 
     for items in data:
-        
         dataName.append(items['name'])
         if items['name'] == 'id_area':
             value = stateArea[items['value']]
@@ -41,19 +69,21 @@ def create_product(data):
 
     print(sql)
     print(valores)
-    '''
-    INSERT INTO productos (id_producto, nombre_producto, modelo, marca, hostname, id_area, id_categoria, usuario_modificacion) VALUES (%s, %s, %s, %s, %s, %s, %s)
-    ['PF4HD0K', 'E14', 'Lenovo', 'WPHI002-LP', 5, 3, 'admin']
-    '''
 
-    cursor.execute(sql, valores)
+    response = cursor.execute(sql, valores)
     DB_CONECT.commit()  # Guarda los cambios en la base de datos
 
     print("Registro insertado, ID:", cursor.lastrowid)
-    cursor.close()
     close_connection()
+    return response
 
-
+def data_table_home():
+    create_connection()
+    create_cursor()
+    cursor.execute("SELECT id_producto, num_serie, hostname FROM productos")  
+    datos = cursor.fetchall()  # Obtiene todos los registros
+    close_connection()
+    return datos
     
 '''
 def insertar_codigo(codigo):

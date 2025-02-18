@@ -10,15 +10,16 @@ from database import create_product
 scanning = False
 result_text = None
 page = None
+data_global_camera = None
+action = None
 
 pygame.mixer.init()
 sound = pygame.mixer.Sound('beep.mp3')
 
-
 def get_camera():
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
-        raise Exception("No se pudo abrir la cámara.")
+        raise Exception("No se puso abrir la camara.")
     return cap
 
 def get_frame(cap):
@@ -31,8 +32,9 @@ def encode_frame_to_base64(frame):
     _, buffer = cv2.imencode('.jpg', frame)
     return base64.b64encode(buffer).decode('utf-8')
 
-def start_scan(p, rs, e):
-    global scanning, page, result_text
+def start_scan(p, rs, act, e):
+    global scanning, page, result_text, action
+    action = act
     page = p
     result_text = rs
     scanning = True
@@ -43,6 +45,7 @@ def scan_loop():
     global scanning
     code_count = {}
     frames_checked = 0
+    items = None
 
     while scanning:
         frame = get_frame(cap)
@@ -105,4 +108,9 @@ def getCode(code):
     result_text.value = f"Resultado: {items}"
     print(items)
 
-    create_product(items)
+    match action:
+        case 'add_items':
+            response = create_product(items)
+            return response
+        case _:
+            return "Otro número"
