@@ -22,6 +22,14 @@ def get_camera():
         raise Exception("No se puso abrir la camara.")
     return cap
 
+def close_camera():
+    cap = get_camera()
+    # Liberar recursos
+    cap.release()
+    cv2.destroyAllWindows()
+    print("❌ Camara cerrada")
+
+
 def get_frame(cap):
     ret, frame = cap.read()
     if not ret:
@@ -45,7 +53,6 @@ def scan_loop():
     global scanning
     code_count = {}
     frames_checked = 0
-    items = None
 
     while scanning:
         frame = get_frame(cap)
@@ -107,7 +114,7 @@ def getCode(code):
     
     result_text.value = f"Resultado: {items}"
     print(items)
-
+    '''
     match action:
         case 'add_items':
             response = create_product(items)
@@ -117,3 +124,4 @@ def getCode(code):
             return response
         case _:
             return "Otro número"
+    '''

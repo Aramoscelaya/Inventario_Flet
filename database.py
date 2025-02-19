@@ -52,39 +52,91 @@ def create_product(data):
     #[{'name': 'num_serie', 'value': 'PF4HD0K'}, {'name': 'modelo', 'value': 'E14'}, {'name': 'marca', 'value': 'Lenovo'}, {'name': 'hostname', 'value': 'WPHI002-LP'}, {'name': 'id_area', 'value': 'Honest'}, {'name': 'id_categoria', 'value': 'Laptop'}, {'name': 'usuario_modificacion', 'value': 'admin'}]
     dataName = []
     dataValue = []
+    response = []
 
-    for items in data:
-        dataName.append(items['name'])
-        if items['name'] == 'id_area':
-            value = stateArea[items['value']]
-            dataValue.append(value)
-        elif items['name'] == 'id_categoria':
-            value = stateCategory[items['value']]
-            dataValue.append(value)
-        else:
-            dataValue.append(items['value'])
+    try:
+        for items in data:
+            dataName.append(items['name'])
+            if items['name'] == 'id_area':
+                value = stateArea[items['value']]
+                dataValue.append(value)
+            elif items['name'] == 'id_categoria':
+                value = stateCategory[items['value']]
+                dataValue.append(value)
+            else:
+                dataValue.append(items['value'])
 
-    sql = 'INSERT INTO productos (nombre_producto, '+', '.join(dataName)+') VALUES ("", %s, %s, %s, %s, %s, %s, %s)'
-    valores = (dataValue)
+        sql = 'INSERT INTO productos (nombre_producto, '+', '.join(dataName)+') VALUES ("", %s, %s, %s, %s, %s, %s, %s)'
+        valores = (dataValue)
 
-    print(sql)
-    print(valores)
+        print(sql)
+        print(valores)
 
-    response = cursor.execute(sql, valores)
-    DB_CONECT.commit()  # Guarda los cambios en la base de datos
+        response = cursor.execute(sql, valores)
+        DB_CONECT.commit()  # Guarda los cambios en la base de datos
 
-    print("Registro insertado, ID:", cursor.lastrowid)
-    close_connection()
+        print("Registro insertado, ID:", cursor.lastrowid)
+        close_connection()
+    except mysql.connector.errors.ProgrammingError as e:
+        print(f"❌ Error en la consulta SQL: {e}")
+    except mysql.connector.Error as e:
+        print(f"⚠️ Error en la conexión o ejecución: {e}")
+    finally:
+        if 'cursor' in locals() and cursor:
+            cursor.close()
+        if 'conexion' in locals() and DB_CONECT.is_connected():
+            close_connection()
+            print("Conexión cerrada.")
     return response
 
 def data_table_home():
     create_connection()
     create_cursor()
-    cursor.execute("SELECT id_producto, num_serie, hostname FROM productos")  
-    datos = cursor.fetchall()  # Obtiene todos los registros
-    close_connection()
+    datos = []
+    try:
+        cursor.execute("SELECT id_producto, num_serie, hostname FROM productos")  
+        datos = cursor.fetchall()  # Obtiene todos los registros
+        close_connection()
+    except mysql.connector.errors.ProgrammingError as e:
+        print(f"❌ Error en la consulta SQL: {e}")
+    except mysql.connector.Error as e:
+        print(f"⚠️ Error en la conexión o ejecución: {e}")
+    finally:
+        if 'cursor' in locals() and cursor:
+            cursor.close()
+        if 'conexion' in locals() and DB_CONECT.is_connected():
+            close_connection()
+            print("Conexión cerrada.")
+    
     return datos
     
+def get_data_user_dropdown():
+    create_connection()
+    create_cursor()
+    datos = []
+    try:
+        cursor.execute("SELECT id_usuario, usuario, nombre FROM usuarios")  
+        datas = cursor.fetchall()  # Obtiene todos los registros
+        for data in datas:
+            item = {}
+            item['label'] = data[1]
+            item['value'] = data[2]
+            datos.append(item)
+
+        print(datos)
+        close_connection()
+    except mysql.connector.errors.ProgrammingError as e:
+        print(f"❌ Error en la consulta SQL: {e}")
+    except mysql.connector.Error as e:
+        print(f"⚠️ Error en la conexión o ejecución: {e}")
+    finally:
+        if 'cursor' in locals() and cursor:
+            cursor.close()
+        if 'conexion' in locals() and DB_CONECT.is_connected():
+            close_connection()
+            print("Conexión cerrada.")
+    
+    return datos
 '''
 def insertar_codigo(codigo):
     cursor = DB_CONECT.cursor()

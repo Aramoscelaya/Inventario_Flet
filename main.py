@@ -1,11 +1,11 @@
 import flet as ft
 #import threading
-from camera import get_camera, get_frame, encode_frame_to_base64, start_scan
+from camera import get_camera, get_frame, encode_frame_to_base64, start_scan, close_camera
 from scanner import scan_code
 #import cv2
 #import pygame
 #import time
-from database import data_table_home
+from database import data_table_home, get_data_user_dropdown
 #from products import 
 
 
@@ -49,10 +49,12 @@ def main(page: ft.Page):
 
         match seccion:
             case 'inicio':
+                close_camera()
                 home(page)
             case 'add_items':
                 add_items(page)
             case 'assignment':
+                close_camera()
                 assignment(page)
             case _:
                 home(page)
@@ -164,12 +166,12 @@ def assignment(p: ft.Page):
     global page 
     page = p 
     page.title = "Dropdown en Flet"
-
-    opciones = [{'rj', "Rojo"}, {'vr', "Verde"}, {'az', "Azul"}]
-
+    
+    # Lista de opciones dinámicas
+    data = get_data_user_dropdown()
     dropdown = ft.Dropdown(
         label="Selecciona una opción",
-        options=[ft.dropdown.Option(op) for op in opciones],
+        options=[ft.dropdown.Option(op["label"], text=op["value"]) for op in data],
         #options=[
         #    ft.dropdown.Option("MX", text="México"),
         #    ft.dropdown.Option("US", text="Estados Unidos"),
